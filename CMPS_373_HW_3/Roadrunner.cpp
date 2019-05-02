@@ -6,4 +6,16 @@
 //  Copyright © 2019 Joey Damico. All rights reserved.
 //
 
-#include <stdio.h>
+#include "Agent.h"
+#include "Roadrunner.h"
+
+#include <iostream>
+
+Roadrunner::Roadrunner(int nId) {
+    this->agent_id = nId;
+}
+
+void Roadrunner::print_kind() {
+    std::cout << "R";
+}
+

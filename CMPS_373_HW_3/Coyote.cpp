@@ -6,4 +6,15 @@
 //  Copyright © 2019 Joey Damico. All rights reserved.
 //
 
-#include <stdio.h>
+#include "Agent.h"
+#include "Coyote.h"
+
+#include <iostream>
+
+Coyote::Coyote(int nId) {
+    this->agent_id = nId;
+}
+
+void Coyote::print_kind() {
+    std::cout << "C";
+}
