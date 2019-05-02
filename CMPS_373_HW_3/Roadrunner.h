@@ -9,5 +9,13 @@
 #ifndef Roadrunner_h
 #define Roadrunner_h
 
+class Roadrunner: public Agent {
+public:
+    
+protected:
+    
+private:
+    
+};
 
 #endif /* Roadrunner_h */
