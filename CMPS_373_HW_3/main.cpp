@@ -9,22 +9,21 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include <string>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 
 #include "Agent.h"
 #include "Coyote.h"
 #include "Roadrunner.h"
+#include "Coordinate.h"
 
-#define MAX_X 10
-#define MAX_Y 10
-#define RUNNER_COUNT 20
-#define CYOTE_COUNT 15
+#define MAX_X 4
+#define MAX_Y 4
+#define RUNNER_COUNT 2
+#define CYOTE_COUNT 2
 
-struct Coordinate {
-    int x;
-    int y;
-};
 
 Coordinate generate_random_coord(int max_x, int max_y) {
     Coordinate nCoord;
@@ -33,6 +32,7 @@ Coordinate generate_random_coord(int max_x, int max_y) {
     
     return nCoord;
 }
+
 
 int pick_random_agent(std::vector<std::vector<Agent*> > board) {
     int agt_id = -1;
@@ -56,6 +56,10 @@ Agent * find_agent_by_id(int find_id, std::vector<std::vector<Agent*> > board) {
         }
     }
     return NULL;
+}
+
+Coordinate get_agent_coordinate(std::vector<std::vector<Agent*> > board, int agt_id) {
+    return find_agent_by_id(agt_id, board)->get_location();
 }
 
 void print_board(std::vector<std::vector<Agent*> > board) {
@@ -85,6 +89,58 @@ std::vector<std::vector<Agent*> > create_board(int width, int height) {
         }
     }
     return nBoard;
+}
+
+Coordinate find_new_coordinate(std::vector<std::vector<Agent*> > board, Coordinate current_location, std::string type) {
+    Coordinate new_location;
+    
+    if (type == "C" || type == "R") {
+        // Check Up
+        if (current_location.y - 1 != -1) {
+            if (board[current_location.x][current_location.y - 1] == NULL) {
+                new_location.x = current_location.x;
+                new_location.y = current_location.y - 1;
+                return new_location;
+            }
+        }
+        if (current_location.y + 1 < board[1].size()) {
+            if (board[current_location.x][current_location.y + 1] == NULL) {
+                new_location.x = current_location.x;
+                new_location.y = current_location.y + 1;
+                return new_location;
+            }
+        }
+        if (current_location.x + 1 < board.size()) {
+            if (board[current_location.x + 1][current_location.y] == NULL) {
+                new_location.x = current_location.x + 1;
+                new_location.y = current_location.y;
+                return new_location;
+            }
+        }
+        if (current_location.x - 1 != -1) {
+            if (board[current_location.x - 1][current_location.y] == NULL) {
+                new_location.x = current_location.x - 1;
+                new_location.y = current_location.y;
+                return new_location;
+            }
+        }
+    }
+    //else if (type == "R") {
+    //    return current_location;
+    //}
+    else {
+        // Error
+    }
+    return current_location;
+}
+
+void move_coyote(std::vector<std::vector<Agent*> > &board, int agt_id) {
+    Agent * temp = find_agent_by_id(agt_id, board);
+    Coordinate current_location = get_agent_coordinate(board, agt_id);
+    Coordinate new_location = find_new_coordinate(board, current_location, temp->get_kind());
+    board[current_location.x][current_location.y] = NULL;
+    temp->set_coords(new_location.x, new_location.y);
+    board[new_location.x][new_location.y] = temp;
 }
 
 
@@ -131,17 +187,23 @@ int main(int argc, const char *argv[]) {
     
     coyote_count = count;
     
-    Agent * test = find_agent_by_id(200 + coyote_count - 2, board);
-    
-    std::cout << std::endl;
-    test->print_agent();
-    std::cout << "  Location: " << test->get_x_coord() << ", " << test->get_y_coord();
-    std::cout << std::endl;
-    
     print_board(board);
+    std::cout << std::endl << std::endl << std::endl;
     
+    int test_id;
+    //Agent * test;
     
-
+    while(true) {
+        test_id = pick_random_agent(board);
+        move_coyote(board, test_id);
+        print_board(board);
+        //std::cout << std::endl << std::endl << std::endl;
+        //test->print_agent();
+        //std::cout << "  Location: " << test->get_location().x << ", " << test->get_location().y;
+        //std::cout << std::endl;
+        sleep(3);
+        //break;
+    }
     
     return 0;
 }

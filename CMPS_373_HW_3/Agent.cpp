@@ -23,16 +23,12 @@ Agent::Agent(int nId) {
 }
 
 void Agent::set_coords(int x, int y) {
-    this->x_coord = x;
-    this->y_coord = y;
+    this->agent_location.x = x;
+    this->agent_location.y = y;
 }
 
-int Agent::get_x_coord() {
-    return this->x_coord;
-}
-
-int Agent::get_y_coord() {
-    return this->y_coord;
+Coordinate Agent::get_location() {
+    return this->agent_location;
 }
 
 int Agent::get_agent_id() {

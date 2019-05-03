@@ -14,6 +14,7 @@ class Roadrunner: public Agent {
 public:
     Roadrunner(int nId);
     void print_kind();
+    std::string get_kind();
     
 protected:
     

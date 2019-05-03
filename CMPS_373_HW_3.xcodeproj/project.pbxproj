@@ -34,6 +34,7 @@
 		D44E698C227A9E20003F1C8D /* Roadrunner.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Roadrunner.h; sourceTree = "<group>"; };
 		D44E698D227AA35C003F1C8D /* Coyote.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Coyote.h; sourceTree = "<group>"; };
 		D44E698E227AA36A003F1C8D /* Coyote.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Coyote.cpp; sourceTree = "<group>"; };
+		D44E6993227B939F003F1C8D /* Coordinate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Coordinate.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,6 +74,7 @@
 				D44E698C227A9E20003F1C8D /* Roadrunner.h */,
 				D44E698D227AA35C003F1C8D /* Coyote.h */,
 				D44E698E227AA36A003F1C8D /* Coyote.cpp */,
+				D44E6993227B939F003F1C8D /* Coordinate.h */,
 			);
 			path = CMPS_373_HW_3;
 			sourceTree = "<group>";

@@ -19,3 +19,6 @@ void Roadrunner::print_kind() {
     std::cout << "R";
 }
 
+std::string Roadrunner::get_kind() {
+    return "R";
+}

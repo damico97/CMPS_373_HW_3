@@ -5,6 +5,7 @@
 //  Created by Joey Damico on 5/2/19.
 //  Copyright © 2019 Joey Damico. All rights reserved.
 //
+#include <vector>
 
 #include "Agent.h"
 #include "Coyote.h"
@@ -17,4 +18,8 @@ Coyote::Coyote(int nId) {
 
 void Coyote::print_kind() {
     std::cout << "C";
+}
+
+std::string Coyote::get_kind() {
+    return "C";
 }
