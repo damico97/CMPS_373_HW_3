@@ -11,6 +11,7 @@
 		D44E6989227A1E5C003F1C8D /* Agent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D44E6987227A1E5C003F1C8D /* Agent.cpp */; };
 		D44E698B227A9E0B003F1C8D /* Roadrunner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D44E698A227A9E0B003F1C8D /* Roadrunner.cpp */; };
 		D44E698F227AA36A003F1C8D /* Coyote.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D44E698E227AA36A003F1C8D /* Coyote.cpp */; };
+		D4A8D6C7227F449F004C316E /* World.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D4A8D6C6227F449F004C316E /* World.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -35,6 +36,8 @@
 		D44E698D227AA35C003F1C8D /* Coyote.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Coyote.h; sourceTree = "<group>"; };
 		D44E698E227AA36A003F1C8D /* Coyote.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Coyote.cpp; sourceTree = "<group>"; };
 		D44E6993227B939F003F1C8D /* Coordinate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Coordinate.h; sourceTree = "<group>"; };
+		D4A8D6C5227F4491004C316E /* World.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = World.h; sourceTree = "<group>"; };
+		D4A8D6C6227F449F004C316E /* World.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = World.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,6 +78,8 @@
 				D44E698D227AA35C003F1C8D /* Coyote.h */,
 				D44E698E227AA36A003F1C8D /* Coyote.cpp */,
 				D44E6993227B939F003F1C8D /* Coordinate.h */,
+				D4A8D6C5227F4491004C316E /* World.h */,
+				D4A8D6C6227F449F004C316E /* World.cpp */,
 			);
 			path = CMPS_373_HW_3;
 			sourceTree = "<group>";
@@ -136,6 +141,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D44E698B227A9E0B003F1C8D /* Roadrunner.cpp in Sources */,
+				D4A8D6C7227F449F004C316E /* World.cpp in Sources */,
 				D44E6980227A1C19003F1C8D /* main.cpp in Sources */,
 				D44E698F227AA36A003F1C8D /* Coyote.cpp in Sources */,
 				D44E6989227A1E5C003F1C8D /* Agent.cpp in Sources */,

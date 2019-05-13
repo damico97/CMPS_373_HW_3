@@ -1,209 +1,166 @@
-//
-//  main.cpp
-//  CMPS_373_HW_3
-//
-//  Created by Joey Damico on 5/1/19.
-//  Copyright © 2019 Joey Damico. All rights reserved.
-//
+/**
+ * @file main.cpp
+ * @author Joey Damico
+ * @date May 6, 2019
+ * @brief This is the main .cpp file CMPS-373 Homework #3
+ *
+ * CMPS 373 - Object Oriented Programming
+ * Homework #3 - Roadrunners & Coyotes Simulator
+ */
 
 #include <iostream>
 #include <iomanip>
 #include <vector>
 #include <string>
+#include <fstream>
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
 
+#include "World.h"
 #include "Agent.h"
 #include "Coyote.h"
 #include "Roadrunner.h"
 #include "Coordinate.h"
 
-#define MAX_X 4
-#define MAX_Y 4
-#define RUNNER_COUNT 2
-#define CYOTE_COUNT 2
-
-
-Coordinate generate_random_coord(int max_x, int max_y) {
-    Coordinate nCoord;
-    nCoord.x = rand() % max_x;
-    nCoord.y = rand() % max_y;
-    
-    return nCoord;
-}
-
-
-int pick_random_agent(std::vector<std::vector<Agent*> > board) {
-    int agt_id = -1;
-    Coordinate nCoord;
-    while(true) {
-        nCoord = generate_random_coord(MAX_X, MAX_Y);
-        if (board[nCoord.x][nCoord.y] != NULL) {
-            agt_id = board[nCoord.x][nCoord.y]->get_agent_id();
-            break;
-        }
-    }
-    return agt_id;
-}
-
-Agent * find_agent_by_id(int find_id, std::vector<std::vector<Agent*> > board) {
-    for (int i = 0; i < board.size(); i++) {
-        for (int j = 0; j < board[i].size(); j++) {
-            if (board[i][j] != NULL && board[i][j]->get_agent_id() == find_id) {
-                return board[i][j];
-            }
-        }
-    }
-    return NULL;
-}
-
-Coordinate get_agent_coordinate(std::vector<std::vector<Agent*> > board, int agt_id) {
-    return find_agent_by_id(agt_id, board)->get_location();
-}
-
-void print_board(std::vector<std::vector<Agent*> > board) {
-    std::cout << std::endl << std::setfill('-') << std::setw(7 * board[1].size()) << "" << std::endl;
-    for (int i = 0; i < board.size(); i++) {
-        for (int j = 0; j < board[i].size(); j++) {
-            if (board[i][j] != NULL) {
-                std::cout << "|  ";
-                board[i][j]->print_kind();
-                std::cout << "  |";
-            }
-            else {
-                std::cout << "|     |";
-            }
-        }
-        std::cout << std::endl << std::setfill('-') << std::setw(7 * board[i].size()) << "" << std::endl;
-    }
-    std::cout << std::endl;
-}
-
-std::vector<std::vector<Agent*> > create_board(int width, int height) {
-    std::vector<std::vector<Agent*> > nBoard;
-    for (int i = 0; i < width; i++) {
-        nBoard.resize(width);
-        for (int j = 0; j < height; j++) {
-            nBoard[i].push_back(NULL);
-        }
-    }
-    return nBoard;
-}
-
-Coordinate find_new_coordinate(std::vector<std::vector<Agent*> > board, Coordinate current_location, std::string type) {
-    Coordinate new_location;
-    
-    if (type == "C" || type == "R") {
-        // Check Up
-        if (current_location.y - 1 != -1) {
-            if (board[current_location.x][current_location.y - 1] == NULL) {
-                new_location.x = current_location.x;
-                new_location.y = current_location.y - 1;
-                return new_location;
-            }
-        }
-        if (current_location.y + 1 < board[1].size()) {
-            if (board[current_location.x][current_location.y + 1] == NULL) {
-                new_location.x = current_location.x;
-                new_location.y = current_location.y + 1;
-                return new_location;
-            }
-        }
-        if (current_location.x + 1 < board.size()) {
-            if (board[current_location.x + 1][current_location.y] == NULL) {
-                new_location.x = current_location.x + 1;
-                new_location.y = current_location.y;
-                return new_location;
-            }
-        }
-        if (current_location.x - 1 != -1) {
-            if (board[current_location.x - 1][current_location.y] == NULL) {
-                new_location.x = current_location.x - 1;
-                new_location.y = current_location.y;
-                return new_location;
-            }
-        }
-    }
-    //else if (type == "R") {
-    //    return current_location;
-    //}
-    else {
-        // Error
-    }
-    return current_location;
-}
-
-void move_coyote(std::vector<std::vector<Agent*> > &board, int agt_id) {
-    Agent * temp = find_agent_by_id(agt_id, board);
-    Coordinate current_location = get_agent_coordinate(board, agt_id);
-    Coordinate new_location = find_new_coordinate(board, current_location, temp->get_kind());
-    board[current_location.x][current_location.y] = NULL;
-    temp->set_coords(new_location.x, new_location.y);
-    board[new_location.x][new_location.y] = temp;
-}
+#define MAX_X 1
+#define MAX_Y 10
+#define RUNNER_COUNT 1
+#define COYOTE_COUNT 2
 
 
 int main(int argc, const char *argv[]) {
+    // Used to create Random Numbers
     srand(time(NULL));
     
-    int roadrunner_count = 0;
-    int coyote_count = 0;
+    // Stores the input from the config file
+    int board_width = 0;
+    int board_height = 0;
+    int num_of_roadrunner = 0;
+    int num_of_coyote = 0;
     
-    std::vector<std::vector<Agent*> > board = create_board(MAX_X, MAX_Y);
+    // Used For Reading in from the Config File
+    std::string buffer;
+    std::string short_buffer;
     
-    //print_board(board);
+    // Open the File
+    std::ifstream config_file;
+    config_file.open("config.txt");
     
-    int count = 0;
-    while (count < RUNNER_COUNT) {
-        Coordinate nCoord = generate_random_coord(MAX_X, MAX_Y);
-        if (board[nCoord.x][nCoord.y] == NULL) {
-            board[nCoord.x][nCoord.y] = new Roadrunner(100 + count);
-            board[nCoord.x][nCoord.y]->set_coords(nCoord.x, nCoord.y);
-            count++;
-        }
-        else {
-            // Do Nothing
+    // Check if the file is open
+    if(config_file.is_open()) {
+        while (!config_file.eof()) {
+            getline(config_file, buffer);
+            
+            if (buffer.substr(0, buffer.find("=")) == "WIDTH OF THE BOARD ") {
+                short_buffer = buffer.substr(buffer.find("=") + 2, buffer.size());
+                if (short_buffer == "") {
+                    board_width = 0;
+                }
+                else {
+                    board_width = std::stoi(short_buffer);
+                }
+            }
+            else if (buffer.substr(0, buffer.find("=")) == "HEIGHT OF THE BOARD ") {
+                short_buffer = buffer.substr(buffer.find("=") + 2, buffer.size());
+                if (short_buffer == "") {
+                    board_height = 0;
+                }
+                else {
+                    board_height = std::stoi(short_buffer);
+                }
+            }
+            else if (buffer.substr(0, buffer.find("=")) == "INITIAL NUMBER OF COYOTES ") {
+                short_buffer = buffer.substr(buffer.find("=") + 2, buffer.size());
+                if (short_buffer == "") {
+                    num_of_coyote = 0;
+                }
+                else {
+                    num_of_coyote = std::stoi(short_buffer);
+                }
+            }
+            else if (buffer.substr(0, buffer.find("=")) == "INITIAL NUMBERS OF ROADRUNNERS ") {
+                short_buffer = buffer.substr(buffer.find("=") + 2, buffer.size());
+                if (short_buffer == "") {
+                    num_of_roadrunner = 0;
+                }
+                else {
+                    num_of_roadrunner = std::stoi(short_buffer);
+                }
+            }
         }
     }
-    roadrunner_count = count;
-    
-    //print_board(board);
-    
-    std::cout << std::endl << std:: endl;
-    
-    count = 0;
-    while (count < CYOTE_COUNT) {
-        Coordinate nCoord = generate_random_coord(MAX_X, MAX_Y);
-        if (board[nCoord.x][nCoord.y] == NULL) {
-            board[nCoord.x][nCoord.y] = new Coyote(200 + count);
-            board[nCoord.x][nCoord.y]->set_coords(nCoord.x, nCoord.y);
-            count++;
-        }
-        else {
-            // Do Nothing
-        }
+    // File is not opened, close the program
+    else {
+        std::cerr << std::endl << "**ERROR** 'config.txt' Does Not Exist" << std::endl;
+        std::cerr << "Closing The Program" << std::endl;
+        return 0;
     }
     
-    coyote_count = count;
     
-    print_board(board);
-    std::cout << std::endl << std::endl << std::endl;
+    // Validate All Input
+    // Check board_height
+    if (board_height <= 0 || board_height > INT_MAX) {
+        std::cerr << "**ERROR** Board Height input is not a valid number" << std::endl;
+        std::cerr << "Closing The Program" << std::endl;
+        return 0;
+    }
+    // Check board_width
+    if (board_width <= 0 || board_width > INT_MAX) {
+        std::cerr << "**ERROR** Board Width input is not a valid number" << std::endl;
+        std::cerr << "Closing The Program" << std::endl;
+        return 0;
+    }
+    // Check number of coyotes
+    if (num_of_coyote <= 0 || num_of_coyote > INT_MAX) {
+        std::cerr << "**ERROR** Coyote input is not a valid number" << std::endl;
+        std::cerr << "Closing The Program" << std::endl;
+        return 0;
+    }
+    // Check number of roadrunner
+    if (num_of_roadrunner <= 0 || num_of_roadrunner > INT_MAX) {
+        std::cerr << "**ERROR** Roadrunner input is not a valid number" << std::endl;
+        std::cerr << "Closing The Program" << std::endl;
+        return 0;
+    }
     
-    int test_id;
-    //Agent * test;
+    
+    if (num_of_roadrunner + num_of_coyote > board_height * board_width) {
+        std::cerr << "**ERROR** The number of Agent's is greater than the number of loactions in the board" << std::endl;
+        std::cerr << "Closing The Program" << std::endl;
+        return 0;
+    }
+    
+    
+    
+    // ofstream to write to a file for each time step summary
+    std::ofstream outputfile;
+    // Open the file
+    outputfile.open("simulation_output.txt");
+    
+    World world = World(board_width, board_height, num_of_roadrunner, num_of_coyote);
+    
+    world.create_board(board_width, board_height);
+    
+    world.fill_board();
     
     while(true) {
-        test_id = pick_random_agent(board);
-        move_coyote(board, test_id);
-        print_board(board);
-        //std::cout << std::endl << std::endl << std::endl;
-        //test->print_agent();
-        //std::cout << "  Location: " << test->get_location().x << ", " << test->get_location().y;
-        //std::cout << std::endl;
-        sleep(3);
-        //break;
+        world.count_pop();
+        
+        outputfile << "Simulation Step: " << world.get_step_counter() << std::endl;
+        outputfile << "Roadrunner Population = " << world.get_roadrunner_pop() << std::endl;
+        outputfile << "Coyote Population = " << world.get_coyote_pop() << std::endl;
+        outputfile << std::endl << std::endl;
+        
+        if (world.get_roadrunner_pop() == 0 || world.get_coyote_pop() == 0) {
+            break;
+        }
+        
+        world.simulation_step();
     }
     
+    outputfile.close();
+    
+    std::cout << "Simulation Over" << std::endl;
     return 0;
 }
